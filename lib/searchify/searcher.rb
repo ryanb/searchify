@@ -40,8 +40,10 @@ module Searchify
           build_all_facets
         elsif column_name?(arg)
           @facets << build_facet(arg)
+        elsif association_name?(arg)
+          build_association_facets(arg)
         else
-          raise "Argument '#{arg}' does not match any column for the model"
+          raise "Argument '#{arg}' does not match any column or association for the model"
         end
       end
     end
@@ -50,6 +52,13 @@ module Searchify
       @facets << ParentFacet.new(@model_class, :all, :text, 'All Text')
       non_id_columns.each do |column|
         @facets << build_facet(column.name)
+      end
+    end
+    
+    def build_association_facets(association_name)
+      reflection = @model_class.reflect_on_association(association_name)
+      reflection.klass.columns.each do |column|
+        @facets << Facet.new(@model_class, [association_name, column.name].join('_'))
       end
     end
     
@@ -63,6 +72,10 @@ module Searchify
     
     def column_name?(arg)
       @model_class.columns.map(&:name).map(&:to_s).include? arg.to_s
+    end
+    
+    def association_name?(arg)
+      @model_class.reflect_on_association(arg)
     end
   end
 end

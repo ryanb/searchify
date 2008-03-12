@@ -101,4 +101,12 @@ describe Searchify::Searcher do
     searcher = Searchify::Searcher.new(MockedModel, :name)
     searcher.conditions(:name => 'Joe').should == ["(custom_table.name LIKE ?)", 'Joe']
   end
+  
+  it "should include a facet through associations" do
+    MockedModel.add_column(:name)
+    MockedModel.add_column(:foo)
+    MockedModel.has_many(:mocked_models)
+    searcher = Searchify::Searcher.new(MockedModel, :mocked_models)
+    searcher.facets.map(&:name).should == %w[mocked_models_name mocked_models_foo]
+  end
 end
