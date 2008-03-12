@@ -24,4 +24,8 @@ class ModelMock < ActiveRecord::Base
   def self.reset_columns
     @columns = []
   end
+  
+  def self.inspect
+    "Model Mock"
+  end
 end
