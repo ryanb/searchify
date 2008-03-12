@@ -19,10 +19,10 @@ module Searchify
       options.each do |name, value|
         if name.to_sym == :all
           @facets.each do |facet|
-            conditions << ["model_mocks.#{facet.name} LIKE ?", value] unless facet.all?
+            conditions << ["mocked_models.#{facet.name} LIKE ?", value] unless facet.all?
           end
         else
-          conditions << ["model_mocks.#{name} LIKE ?", value] if column_name?(name)
+          conditions << ["mocked_models.#{name} LIKE ?", value] if column_name?(name)
         end
       end
       if conditions.empty?

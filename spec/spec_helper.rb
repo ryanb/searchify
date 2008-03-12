@@ -9,7 +9,7 @@ Spec::Runner.configure do |config|
   config.mock_with :mocha
 end
 
-class ModelMock < ActiveRecord::Base
+class MockedModel < ActiveRecord::Base
   class_inheritable_hash :paginate_options
   
   def self.paginate(options)

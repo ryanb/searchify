@@ -18,7 +18,7 @@ module Searchify
     end
     
     def conditions(value)
-      ["model_mocks.#{name} LIKE ?", value]
+      ["mocked_models.#{name} LIKE ?", value]
     end
   end
 end

@@ -1,56 +1,56 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe ModelMock, "with searchify" do
+describe MockedModel, "with searchify" do
   before(:each) do
-    ModelMock.searchify
+    MockedModel.searchify
   end
   
   after(:each) do
-    ModelMock.reset_columns
+    MockedModel.reset_columns
   end
   
   it "should add a search method to model" do
-    ModelMock.should respond_to(:search)
+    MockedModel.should respond_to(:search)
   end
   
   it "should call paginate on model when calling search" do
-    ModelMock.expects(:paginate)
-    ModelMock.search
+    MockedModel.expects(:paginate)
+    MockedModel.search
   end
   
   it "should pass per_page option" do
-    ModelMock.search(:per_page => 10)
-    ModelMock.paginate_options[:per_page].should == 10
+    MockedModel.search(:per_page => 10)
+    MockedModel.paginate_options[:per_page].should == 10
   end
   
   it "should pass page = 1 if page not specified" do
-    ModelMock.search
-    ModelMock.paginate_options[:page].should == 1
+    MockedModel.search
+    MockedModel.paginate_options[:page].should == 1
   end
   
   it "should pass page option" do
-    ModelMock.search(:page => 3)
-    ModelMock.paginate_options[:page].should == 3
+    MockedModel.search(:page => 3)
+    MockedModel.paginate_options[:page].should == 3
   end
   
   it "should ignore unknown options" do
-    ModelMock.search(:foobiedo => 'should ignore')
-    ModelMock.paginate_options[:foobiedo].should be_nil
+    MockedModel.search(:foobiedo => 'should ignore')
+    MockedModel.paginate_options[:foobiedo].should be_nil
   end
   
   it "should be able to add a column" do
-    ModelMock.add_column('foo')
-    ModelMock.columns.should have(1).record
-    ModelMock.columns.first.name.should == 'foo'
+    MockedModel.add_column('foo')
+    MockedModel.columns.should have(1).record
+    MockedModel.columns.first.name.should == 'foo'
   end
   
   it "should pass search column as a LIKE condition" do
-    ModelMock.add_column(:name)
-    ModelMock.search(:name => 'Ryan')
-    ModelMock.paginate_options[:conditions].should == ["model_mocks.name LIKE ?", 'Ryan']
+    MockedModel.add_column(:name)
+    MockedModel.search(:name => 'Ryan')
+    MockedModel.paginate_options[:conditions].should == ["mocked_models.name LIKE ?", 'Ryan']
   end
   
   it "should have a searcher" do
-    ModelMock.searcher.should_not be_nil
+    MockedModel.searcher.should_not be_nil
   end
 end
