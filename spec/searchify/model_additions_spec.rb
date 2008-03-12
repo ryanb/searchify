@@ -15,7 +15,7 @@ describe MockedModel do
     MockedModel.add_column(:name)
     MockedModel.searchify(:all)
     MockedModel.search(:name => 'Ryan')
-    MockedModel.paginate_options[:conditions].should == ["mocked_models.name LIKE ?", 'Ryan']
+    MockedModel.paginate_options[:conditions].should == ["(mocked_models.name LIKE ?)", 'Ryan']
   end
 end
 
