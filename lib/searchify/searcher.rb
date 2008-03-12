@@ -18,16 +18,12 @@ module Searchify
       conditions = []
       options.each do |name, value|
         if name.to_sym == :all
-          return facet_with_name(:all).conditions(value)
+          conditions << facet_with_name(:all).conditions(value)
         else
           conditions << facet_with_name(name).conditions(value) unless facet_with_name(name).nil?
         end
       end
-      if conditions.empty?
-        nil
-      else
-        [conditions.transpose.first.join(' AND '), *conditions.transpose.last]
-      end
+      ConditionsMerger.merge(conditions)
     end
     
     private

@@ -17,13 +17,13 @@ describe Searchify::ParentFacet do
   
   it "should use child facets for conditions" do
     @facet.add_child Searchify::Facet.new(MockedModel, :name)
-    @facet.conditions('Joe').should == ["mocked_models.name LIKE ?", 'Joe']
+    @facet.conditions('Joe').should == ["(mocked_models.name LIKE ?)", 'Joe']
   end
   
   it "should join multiple child facet conditions with OR" do
     @facet.add_child Searchify::Facet.new(MockedModel, :name)
     @facet.add_child Searchify::Facet.new(MockedModel, :foo)
-    @facet.conditions('Joe').should == ["mocked_models.name LIKE ? OR mocked_models.foo LIKE ?", 'Joe', 'Joe']
+    @facet.conditions('Joe').should == ["(mocked_models.name LIKE ?) OR (mocked_models.foo LIKE ?)", 'Joe', 'Joe']
   end
   
   it "should return nil for conditions if no children" do
@@ -33,6 +33,6 @@ describe Searchify::ParentFacet do
   it "should only apply conditions to text facets" do
     @facet.add_child Searchify::Facet.new(MockedModel, :name, :text)
     @facet.add_child Searchify::Facet.new(MockedModel, :count, :integer)
-    @facet.conditions('Joe').should == ["mocked_models.name LIKE ?", 'Joe']
+    @facet.conditions('Joe').should == ["(mocked_models.name LIKE ?)", 'Joe']
   end
 end

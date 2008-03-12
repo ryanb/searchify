@@ -18,11 +18,7 @@ module Searchify
     private
     
     def merge_conditions(conditions)
-      if conditions.empty? 
-        nil
-      else
-        [conditions.transpose.first.join(' OR '), *conditions.transpose.last]
-      end
+      ConditionsMerger.merge(conditions, 'OR')
     end
     
     def textual_children

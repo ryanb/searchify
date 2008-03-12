@@ -52,7 +52,7 @@ describe Searchify::Searcher do
   it "should have conditions for searching name" do
     MockedModel.add_column(:name)
     searcher = Searchify::Searcher.new(MockedModel, :name)
-    searcher.conditions(:name => 'Joe').should == ["mocked_models.name LIKE ?", 'Joe']
+    searcher.conditions(:name => 'Joe').should == ["(mocked_models.name LIKE ?)", 'Joe']
   end
   
   # it's difficult to test this all in one expectation because the order of the conditions can change
@@ -61,8 +61,8 @@ describe Searchify::Searcher do
     MockedModel.add_column(:foo)
     searcher = Searchify::Searcher.new(MockedModel, :name, :foo)
     conditions = searcher.conditions(:name => 'Joe', :foo => 'Bar')
-    conditions.first.should include("mocked_models.name LIKE ?")
-    conditions.first.should include("mocked_models.foo LIKE ?")
+    conditions.first.should include("(mocked_models.name LIKE ?)")
+    conditions.first.should include("(mocked_models.foo LIKE ?)")
     conditions.first.should include("AND")
     conditions.should include("Joe")
     conditions.should include("Bar")
@@ -72,7 +72,7 @@ describe Searchify::Searcher do
     MockedModel.add_column(:name)
     MockedModel.add_column(:foo)
     searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.conditions(:all => 'Joe').should == ["mocked_models.name LIKE ? OR mocked_models.foo LIKE ?", 'Joe', 'Joe']
+    searcher.conditions(:all => 'Joe').should == ["((mocked_models.name LIKE ?) OR (mocked_models.foo LIKE ?))", 'Joe', 'Joe']
   end
   
   it "should have conditions for all columns except those ending in id" do
@@ -80,6 +80,18 @@ describe Searchify::Searcher do
     MockedModel.add_column(:id)
     MockedModel.add_column(:parent_id)
     searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.conditions(:all => 'Joe').should == ["mocked_models.name LIKE ?", 'Joe']
+    searcher.conditions(:all => 'Joe').should == ["((mocked_models.name LIKE ?))", 'Joe']
+  end
+  
+  it "should have conditions for all columns and another" do
+    MockedModel.add_column(:name)
+    MockedModel.add_column(:foo)
+    searcher = Searchify::Searcher.new(MockedModel, :all)
+    conditions = searcher.conditions(:all => 'Joe', :name => 'Jo%')
+    conditions.first.should include("(mocked_models.name LIKE ?) OR (mocked_models.foo LIKE ?)")
+    conditions.first.should include("(mocked_models.name LIKE ?)")
+    conditions.first.should include("AND")
+    conditions.should include("Joe")
+    conditions.should include("Jo%")
   end
 end
