@@ -5,45 +5,6 @@ describe Searchify::Searcher do
     MockedModel.reset_columns
   end
   
-  it "should include a facet for each model column specified" do
-    MockedModel.add_column(:name)
-    MockedModel.add_column(:ignore_me)
-    searcher = Searchify::Searcher.new(MockedModel, :name)
-    searcher.facets.should have(1).record
-    searcher.facets.first.name.should == 'name'
-  end
-  
-  it "should raise an error if attempting to include a facet which isn't a column" do
-    MockedModel.add_column(:name)
-    lambda {
-      searcher = Searchify::Searcher.new(MockedModel, :foo)
-    }.should raise_error(Exception)
-  end
-  
-  it "should include all columns with 'all' facet" do
-    MockedModel.add_column(:name)
-    MockedModel.add_column(:created_at)
-    searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.facets.should have(3).records
-    searcher.facets.first.name.should == 'all'
-  end
-  
-  it "should include ignore columns ending in 'id' with 'all' facet" do
-    MockedModel.add_column(:name)
-    MockedModel.add_column(:id)
-    MockedModel.add_column(:parent_id)
-    searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.facets.should have(2).records
-    searcher.facets.first.name.should == 'all'
-    searcher.facets.last.name.should == 'name'
-  end
-  
-  it "should have a display name of 'All Text' and type 'text' for 'all' facet" do
-    searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.facets.first.display_name.should == 'All Text'
-    searcher.facets.first.type.should == :text
-  end
-  
   it "should be able to have no conditions" do
     searcher = Searchify::Searcher.new(MockedModel, :all)
     searcher.conditions({}).should be_nil
@@ -100,13 +61,5 @@ describe Searchify::Searcher do
     MockedModel.stubs(:table_name).returns('custom_table')
     searcher = Searchify::Searcher.new(MockedModel, :name)
     searcher.conditions(:name => 'Joe').should == ["(custom_table.name LIKE ?)", 'Joe']
-  end
-  
-  it "should include a facet through associations" do
-    MockedModel.add_column(:name)
-    MockedModel.add_column(:foo)
-    MockedModel.has_many(:mocked_models)
-    searcher = Searchify::Searcher.new(MockedModel, :mocked_models)
-    searcher.facets.map(&:name).should == %w[mocked_models_name mocked_models_foo]
   end
 end
