@@ -58,7 +58,7 @@ module Searchify
     end
     
     def non_id_columns
-      @model_class.columns.select { |c| c.name.to_s !~ /id$/ }
+      @model_class.columns.select { |c| c.name.to_s != 'id' && c.name.to_s !~ /_id$/ }
     end
     
     def column_name?(arg)

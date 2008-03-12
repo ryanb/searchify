@@ -75,12 +75,12 @@ describe Searchify::Searcher do
     searcher.conditions(:all => 'Joe').should == ["((mocked_models.name LIKE ?) OR (mocked_models.foo LIKE ?))", 'Joe', 'Joe']
   end
   
-  it "should have conditions for all columns except those ending in id" do
-    MockedModel.add_column(:name)
+  it "should have conditions for all columns except those ending in _id" do
+    MockedModel.add_column(:vid)
     MockedModel.add_column(:id)
     MockedModel.add_column(:parent_id)
     searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.conditions(:all => 'Joe').should == ["((mocked_models.name LIKE ?))", 'Joe']
+    searcher.conditions(:all => 'Joe').should == ["((mocked_models.vid LIKE ?))", 'Joe']
   end
   
   it "should have conditions for all columns and another" do
