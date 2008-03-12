@@ -21,7 +21,7 @@ module Searchify
       if conditions.empty? 
         nil
       else
-        [conditions.transpose.first.join(' AND '), *conditions.transpose.last]
+        [conditions.transpose.first.join(' OR '), *conditions.transpose.last]
       end
     end
     
