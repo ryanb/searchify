@@ -59,10 +59,11 @@ describe Searchify::Searcher do
   it "should be able to have multiple conditions" do
     MockedModel.add_column(:name)
     MockedModel.add_column(:foo)
-    searcher = Searchify::Searcher.new(MockedModel, :name)
+    searcher = Searchify::Searcher.new(MockedModel, :name, :foo)
     conditions = searcher.conditions(:name => 'Joe', :foo => 'Bar')
     conditions.first.should include("mocked_models.name LIKE ?")
     conditions.first.should include("mocked_models.foo LIKE ?")
+    conditions.first.should include("AND")
     conditions.should include("Joe")
     conditions.should include("Bar")
   end
@@ -71,7 +72,7 @@ describe Searchify::Searcher do
     MockedModel.add_column(:name)
     MockedModel.add_column(:foo)
     searcher = Searchify::Searcher.new(MockedModel, :all)
-    searcher.conditions(:all => 'Joe').should == ["mocked_models.name LIKE ? AND mocked_models.foo LIKE ?", 'Joe', 'Joe']
+    searcher.conditions(:all => 'Joe').should == ["mocked_models.name LIKE ? OR mocked_models.foo LIKE ?", 'Joe', 'Joe']
   end
   
   it "should have conditions for all columns except those ending in id" do

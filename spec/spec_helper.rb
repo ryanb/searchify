@@ -25,6 +25,10 @@ class MockedModel < ActiveRecord::Base
     @columns = []
   end
   
+  def self.columns
+    @columns || []
+  end
+  
   def self.inspect
     "Model Mock"
   end

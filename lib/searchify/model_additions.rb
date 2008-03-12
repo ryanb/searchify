@@ -1,7 +1,7 @@
 module Searchify
   module ModelAdditions
-    def searchify
-      @searcher = Searchify::Searcher.new(self)
+    def searchify(*args)
+      @searcher = Searchify::Searcher.new(self, *args)
       extend GeneratedMethods
     end
     

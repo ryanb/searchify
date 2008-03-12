@@ -18,11 +18,9 @@ module Searchify
       conditions = []
       options.each do |name, value|
         if name.to_sym == :all
-          @facets.each do |facet|
-            conditions << ["mocked_models.#{facet.name} LIKE ?", value] unless facet.all?
-          end
+          return facet_with_name(:all).conditions(value)
         else
-          conditions << ["mocked_models.#{name} LIKE ?", value] if column_name?(name)
+          conditions << facet_with_name(name).conditions(value) unless facet_with_name(name).nil?
         end
       end
       if conditions.empty?
@@ -35,7 +33,9 @@ module Searchify
     private
     
     def build_facet(*args)
-      Facet.new(@model_class, *args)
+      returning Facet.new(@model_class, *args) do |facet|
+        facet_with_name(:all).add_child(facet) unless facet_with_name(:all).nil?
+      end
     end
     
     def build_facets(args)
@@ -51,10 +51,14 @@ module Searchify
     end
     
     def build_all_facets
-      @facets << build_facet(:all, :text, 'All Text')
+      @facets << ParentFacet.new(@model_class, :all, :text, 'All Text')
       non_id_columns.each do |column|
         @facets << build_facet(column.name)
       end
+    end
+    
+    def facet_with_name(name)
+      @facets.detect { |f| f.name == name.to_s }
     end
     
     def non_id_columns

@@ -1,12 +1,27 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe MockedModel, "with searchify" do
-  before(:each) do
-    MockedModel.searchify
-  end
-  
+describe MockedModel do
   after(:each) do
     MockedModel.reset_columns
+  end
+  
+  it "should be able to add a column" do
+    MockedModel.add_column('foo')
+    MockedModel.columns.should have(1).record
+    MockedModel.columns.first.name.should == 'foo'
+  end
+  
+  it "should pass search column as a LIKE condition" do
+    MockedModel.add_column(:name)
+    MockedModel.searchify(:all)
+    MockedModel.search(:name => 'Ryan')
+    MockedModel.paginate_options[:conditions].should == ["mocked_models.name LIKE ?", 'Ryan']
+  end
+end
+
+describe MockedModel, "with searchify" do
+  before(:each) do
+    MockedModel.searchify :all
   end
   
   it "should add a search method to model" do
@@ -36,18 +51,6 @@ describe MockedModel, "with searchify" do
   it "should ignore unknown options" do
     MockedModel.search(:foobiedo => 'should ignore')
     MockedModel.paginate_options[:foobiedo].should be_nil
-  end
-  
-  it "should be able to add a column" do
-    MockedModel.add_column('foo')
-    MockedModel.columns.should have(1).record
-    MockedModel.columns.first.name.should == 'foo'
-  end
-  
-  it "should pass search column as a LIKE condition" do
-    MockedModel.add_column(:name)
-    MockedModel.search(:name => 'Ryan')
-    MockedModel.paginate_options[:conditions].should == ["mocked_models.name LIKE ?", 'Ryan']
   end
   
   it "should have a searcher" do
