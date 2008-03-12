@@ -25,4 +25,8 @@ describe Searchify::Facet do
     facet = Searchify::Facet.new(MockedModel, :name)
     facet.conditions('foo').should == ["mocked_models.name LIKE ?", 'foo']
   end
+  
+  it "should default to text type" do
+    Searchify::Facet.new(MockedModel, :name).type.should == :text
+  end
 end

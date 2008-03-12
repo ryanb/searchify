@@ -12,8 +12,10 @@ module Searchify
     end
     
     def conditions(value)
-      merge_conditions @children.map { |c| c.conditions(value) }
+      merge_conditions textual_children.map { |c| c.conditions(value) }
     end
+    
+    private
     
     def merge_conditions(conditions)
       if conditions.empty? 
@@ -21,6 +23,10 @@ module Searchify
       else
         [conditions.transpose.first.join(' AND '), *conditions.transpose.last]
       end
+    end
+    
+    def textual_children
+      @children.select { |c| c.type == :text }
     end
   end
 end

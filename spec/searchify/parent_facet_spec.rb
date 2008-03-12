@@ -29,4 +29,10 @@ describe Searchify::ParentFacet do
   it "should return nil for conditions if no children" do
     @facet.conditions('Joe').should be_nil
   end
+  
+  it "should only apply conditions to text facets" do
+    @facet.add_child Searchify::Facet.new(MockedModel, :name, :text)
+    @facet.add_child Searchify::Facet.new(MockedModel, :count, :integer)
+    @facet.conditions('Joe').should == ["mocked_models.name LIKE ?", 'Joe']
+  end
 end
