@@ -1,68 +1,66 @@
 module Searchify
   class FacetsBuilder
-    attr_accessor :facets
-    
-    def self.build(model_class, *facet_names)
-      FacetsBuilder.new(model_class, *facet_names).build
+    def self.build(model_class, *arguments)
+      FacetsBuilder.new(model_class, *arguments).build
     end
     
-    def initialize(model_class, *facet_names)
+    def initialize(model_class, *arguments)
       @model_class = model_class
-      @options = facet_names
+      @arguments = arguments
     end
     
     def build
-      @facets = []
-      @options.each do |arg|
-        if arg.to_sym == :all
-          build_all_facets
-        elsif column_name?(arg)
-          @facets << build_facet(arg)
-        elsif association_name?(arg)
-          build_association_facets(arg)
-        else
-          raise "Argument '#{arg}' does not match any column or association for the model"
-        end
+      facet_names.map do |name|
+        facets_for_name(name)
+      end.flatten
+    end
+    
+    def facets_for_name(name)
+      if name.to_sym == :all
+        build_all_facets
+      elsif column_name?(name)
+        build_facet(name)
+      elsif association_name?(name)
+        build_association_facets(name)
+      else
+        raise "Argument '#{name}' does not match any column or association for the model"
       end
-      @facets
     end
     
     private
     
-    def build_facet(*args)
-      returning Facet.new(@model_class, *args) do |facet|
-        facet_with_name(:all).add_child(facet) unless facet_with_name(:all).nil?
+    def facet_names
+      @arguments # I'll need to expand this once I start accepting hash options
+    end
+    
+    def build_facet(*options)
+      returning Facet.new(@model_class, *options) do |facet|
+        @parent_facet.add_child(facet) if @parent_facet
       end
     end
     
     def build_all_facets
-      @facets << ParentFacet.new(@model_class, :all, :text, 'All Text')
-      non_id_columns.each do |column|
-        @facets << build_facet(column.name)
-      end
+      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text')
+      [@parent_facet] + non_id_columns.map { |column| build_facet(column.name) }
     end
     
     def build_association_facets(association_name)
       reflection = @model_class.reflect_on_association(association_name)
-      reflection.klass.columns.each do |column|
-        @facets << Facet.new(@model_class, [association_name, column.name].join('_'))
+      reflection.klass.columns.map do |column|
+        Facet.new(@model_class, [association_name, column.name].join('_'))
       end
-    end
-    
-    def facet_with_name(name)
-      @facets.detect { |f| f.name == name.to_s }
     end
     
     def non_id_columns
       @model_class.columns.select { |c| c.name.to_s != 'id' && c.name.to_s !~ /_id$/ }
     end
     
-    def column_name?(arg)
-      @model_class.columns.map(&:name).map(&:to_s).include? arg.to_s
+    def column_name?(name)
+      @model_class.columns.map(&:name).map(&:to_s).include? name.to_s
     end
     
-    def association_name?(arg)
-      @model_class.reflect_on_association(arg)
+    def association_name?(name)
+      @model_class.reflect_on_association(name)
     end
   end
 end
