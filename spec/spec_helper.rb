@@ -32,4 +32,8 @@ class MockedModel < ActiveRecord::Base
   def self.inspect
     "Model Mock"
   end
+  
+  def self.table_name
+    'mocked_models'
+  end
 end
