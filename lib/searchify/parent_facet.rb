@@ -1,5 +1,5 @@
 module Searchify
-  class FacetGroup < Facet
+  class ParentFacet < Facet
     attr_accessor :children
     
     def initialize(*args)

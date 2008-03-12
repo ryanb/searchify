@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Searchify::FacetGroup do
+describe Searchify::ParentFacet do
   before(:each) do
-    @facet = Searchify::FacetGroup.new(ModelMock, :all)
+    @facet = Searchify::ParentFacet.new(ModelMock, :all)
   end
   
   it "should have no children initially" do
