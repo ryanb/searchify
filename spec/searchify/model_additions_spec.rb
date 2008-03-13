@@ -13,7 +13,7 @@ describe MockedModel do
   
   it "should pass search column as a LIKE condition" do
     MockedModel.add_column(:name)
-    MockedModel.searchify(:all)
+    MockedModel.searchify(:name)
     MockedModel.search(:name => 'Ryan')
     MockedModel.paginate_options[:conditions].should == ["(mocked_models.name LIKE ?)", 'Ryan']
   end
@@ -21,14 +21,14 @@ describe MockedModel do
   it "should return facets when calling searchify_facets on model" do
     MockedModel.add_column(:name)
     MockedModel.add_column(:foo)
-    MockedModel.searchify(:all)
+    MockedModel.searchify(:name, :foo)
     MockedModel.searchify_facets.map(&:key_name).should == %w[all name foo]
   end
 end
 
 describe MockedModel, "with searchify" do
   before(:each) do
-    MockedModel.searchify :all
+    MockedModel.searchify
   end
   
   it "should add a search method to model" do

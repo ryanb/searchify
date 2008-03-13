@@ -11,15 +11,14 @@ module Searchify
     end
     
     def build
-      facet_names.map do |name|
-        facets_for_name(name)
-      end.flatten
+      facets = []
+      facets << build_all_facets if @prefix.blank?
+      facets += facet_names.map { |name| facets_for_name(name) }.flatten
+      facets
     end
     
     def facets_for_name(name)
-      if name.to_sym == :all
-        build_all_facets
-      elsif column_name?(name)
+      if column_name?(name)
         build_facet(name, :text, nil, @prefix)
       elsif association_name?(name)
         build_association_facets(name)
@@ -47,8 +46,7 @@ module Searchify
     end
     
     def build_all_facets
-      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text') if @prefix.blank?
-      ([@parent_facet] + non_id_columns.map { |column| build_facet(column.name, :text, nil, @prefix) }).compact
+      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text')
     end
     
     def build_association_facets(association_name)
