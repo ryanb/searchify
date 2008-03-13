@@ -13,6 +13,10 @@ module Searchify
       def search(options = {})
         searcher.search(options)
       end
+      
+      def searchify_facets
+        searcher.facets
+      end
     end
   end
 end
