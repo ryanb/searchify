@@ -67,11 +67,7 @@ module Searchify
     end
     
     def arguments_for_association(name)
-      if association_hash[name].nil?
-        [:all]
-      else
-        association_hash[name]
-      end
+      association_hash[name]
     end
     
     def association_hash
