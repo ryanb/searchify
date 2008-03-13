@@ -25,5 +25,9 @@ module Searchify
     def conditions(value)
       ["#{@model_class.table_name}.#{name} LIKE ?", value]
     end
+    
+    def to_json
+      { :name => key_name, :display => display_name, :type => type, :default_value => '' }.to_json
+    end
   end
 end

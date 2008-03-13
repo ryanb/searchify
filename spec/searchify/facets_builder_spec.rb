@@ -63,4 +63,12 @@ describe Searchify::FacetsBuilder do
     facets = Searchify::FacetsBuilder.build(MockedModel, [:all], :foo)
     facets.map(&:key_name).should == %w[foo_name]
   end
+  
+  it "should be able to specify columns to use in the association" do
+    MockedModel.add_column(:name)
+    MockedModel.add_column(:foo)
+    MockedModel.has_many(:mocked_models)
+    facets = Searchify::FacetsBuilder.build(MockedModel, [{:mocked_models => [:name]}])
+    facets.map(&:key_name).should == %w[mocked_models_name]
+  end
 end

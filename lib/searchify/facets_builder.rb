@@ -31,7 +31,13 @@ module Searchify
     private
     
     def facet_names
-      @arguments # I'll need to expand this once I start accepting hash options
+      @arguments.map do |arg|
+        if arg.kind_of? Hash
+          arg.keys
+        else
+          arg
+        end
+      end.flatten
     end
     
     def build_facet(*options)
