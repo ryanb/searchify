@@ -12,7 +12,7 @@ module Searchify
     
     def build
       facets = []
-      facets << build_all_facets if @prefix.blank?
+      facets << build_all_facet if @prefix.blank?
       facets += facet_names.map { |name| facets_for_name(name) }.flatten
       facets
     end
@@ -45,7 +45,7 @@ module Searchify
       end
     end
     
-    def build_all_facets
+    def build_all_facet
       @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text')
     end
     
