@@ -24,7 +24,7 @@ module Searchify
     private
     
     def facet_with_name(name)
-      @facets.detect { |f| f.name == name.to_s }
+      @facets.detect { |f| f.key_name == name.to_s }
     end
   end
 end

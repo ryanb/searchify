@@ -55,4 +55,11 @@ describe Searchify::Searcher do
     conditions.should include("Joe")
     conditions.should include("Jo%")
   end
+  
+  it "should have association conditions" do
+    MockedModel.add_column(:name)
+    MockedModel.has_many(:mocked_models)
+    searcher = Searchify::Searcher.new(MockedModel, :mocked_models)
+    searcher.conditions(:mocked_models_name => 'Joe').should == ["(mocked_models.name LIKE ?)", 'Joe']
+  end
 end
