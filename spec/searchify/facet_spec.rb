@@ -11,11 +11,6 @@ describe Searchify::Facet do
     facet.display_name.should == 'Name'
   end
   
-  it "should use table name" do
-    facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name')
-    facet.display_name.should == 'Name'
-  end
-  
   it "should know if it's an 'all' facet" do
     Searchify::Facet.new(MockedModel, :first_name, :text, 'Name').should_not be_all
     Searchify::Facet.new(MockedModel, :all, :text, 'Name').should be_all
@@ -24,6 +19,12 @@ describe Searchify::Facet do
   it "should have conditions for a given value" do
     facet = Searchify::Facet.new(MockedModel, :name)
     facet.conditions('foo').should == ["mocked_models.name LIKE ?", 'foo']
+  end
+  
+  it "should ask model for table name" do
+    MockedModel.stubs(:table_name).returns('custom_table')
+    facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name')
+    facet.conditions('Joe').should == ["custom_table.first_name LIKE ?", 'Joe']
   end
   
   it "should default to text type" do

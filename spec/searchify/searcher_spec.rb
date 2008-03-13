@@ -55,11 +55,4 @@ describe Searchify::Searcher do
     conditions.should include("Joe")
     conditions.should include("Jo%")
   end
-  
-  it "should ask model for table name" do
-    MockedModel.add_column(:name)
-    MockedModel.stubs(:table_name).returns('custom_table')
-    searcher = Searchify::Searcher.new(MockedModel, :name)
-    searcher.conditions(:name => 'Joe').should == ["(custom_table.name LIKE ?)", 'Joe']
-  end
 end
