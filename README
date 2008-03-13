@@ -1,13 +1,6 @@
 Searchify
 =========
 
-Introduction goes here.
-
-
-Example
-=======
-
-Example goes here.
-
+This is a Rails plugin which will aid in adding searching functionality to models. It is in very early development.
 
 Copyright (c) 2008 Ryan Bates, released under the MIT license
