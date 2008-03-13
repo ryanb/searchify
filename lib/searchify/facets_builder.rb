@@ -11,67 +11,59 @@ module Searchify
     end
     
     def build
-      facets = []
-      facets << build_all_facet if @prefix.blank?
-      facets += facet_names.map { |name| facets_for_name(name) }.flatten
-      facets
-    end
-    
-    def facets_for_name(name)
-      if column_name?(name)
-        build_facet(name, :text, nil, @prefix)
-      elsif association_name?(name)
-        build_association_facets(name)
-      else
-        raise "Argument '#{name}' does not match any column or association for the model"
-      end
+      ([build_parent_facet] + column_facets + association_facets).flatten.compact
     end
     
     private
     
-    def facet_names
-      @arguments.map do |arg|
-        if arg.kind_of? Hash
-          arg.keys
-        else
-          arg
-        end
-      end.flatten
+    def build_parent_facet
+      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text') if @prefix.blank?
     end
     
-    def build_facet(*options)
-      returning Facet.new(@model_class, *options) do |facet|
-        @parent_facet.add_child(facet) if @parent_facet
+    def column_facets
+      column_names.map { |name| facet_from_column_name(name) }
+    end
+    
+    def association_facets
+      associations_hash.map do |association_name, arguments|
+        facets_from_association(association_name, arguments)
       end
     end
     
-    def build_all_facet
-      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text')
+    def column_names
+      @arguments.reject { |a| a.kind_of? Hash }
     end
     
-    def build_association_facets(association_name)
-      reflection = @model_class.reflect_on_association(association_name)
-      FacetsBuilder.build(reflection.klass, arguments_for_association(association_name), association_name)
+    def associations_hash
+      if @arguments.last.kind_of? Hash
+        @arguments.last
+      else
+        {}
+      end
     end
     
-    def non_id_columns
-      @model_class.columns.select { |c| c.name.to_s != 'id' && c.name.to_s !~ /_id$/ }
+    def facet_from_column_name(name)
+      raise "No column found with the name '#{name}' for searchify." if column(name).nil?
+      build_facet(name)
     end
     
-    def column_name?(name)
-      @model_class.columns.map(&:name).map(&:to_s).include? name.to_s
+    def facets_from_association(name, arguments)
+      raise "No association found with the name '#{name}' for searchify." if association_reflection(name).nil?
+      FacetsBuilder.build(association_reflection(name).klass, arguments, name)
     end
     
-    def association_name?(name)
+    def column(name)
+      @model_class.columns.detect { |c| c.name.to_s == name.to_s }
+    end
+    
+    def association_reflection(name)
       @model_class.reflect_on_association(name)
     end
     
-    def arguments_for_association(name)
-      association_hash[name]
-    end
-    
-    def association_hash
-      @arguments.last.kind_of?(Hash) ? @arguments.last : {}
+    def build_facet(name)
+      returning Facet.new(@model_class, name, :text, nil, @prefix) do |facet|
+        @parent_facet.add_child(facet) if @parent_facet
+      end
     end
   end
 end
