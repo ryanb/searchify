@@ -2,9 +2,9 @@ module Searchify
   class Searcher
     attr_accessor :facets
     
-    def initialize(model_class, *facet_names)
+    def initialize(model_class, *options)
       @model_class = model_class
-      @facets = FacetsBuilder.build(model_class, *facet_names)
+      @facets = FacetsBuilder.build(model_class, options)
     end
     
     def search(options)

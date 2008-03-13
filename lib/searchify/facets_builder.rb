@@ -1,12 +1,13 @@
 module Searchify
   class FacetsBuilder
-    def self.build(model_class, *arguments)
-      FacetsBuilder.new(model_class, *arguments).build
+    def self.build(model_class, arguments, prefix = nil)
+      FacetsBuilder.new(model_class, arguments, prefix).build
     end
     
-    def initialize(model_class, *arguments)
+    def initialize(model_class, arguments, prefix = nil)
       @model_class = model_class
       @arguments = arguments
+      @prefix = prefix
     end
     
     def build
@@ -19,7 +20,7 @@ module Searchify
       if name.to_sym == :all
         build_all_facets
       elsif column_name?(name)
-        build_facet(name)
+        build_facet(name, :text, nil, @prefix)
       elsif association_name?(name)
         build_association_facets(name)
       else
@@ -40,8 +41,8 @@ module Searchify
     end
     
     def build_all_facets
-      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text')
-      [@parent_facet] + non_id_columns.map { |column| build_facet(column.name) }
+      @parent_facet = ParentFacet.new(@model_class, :all, :text, 'All Text') if @prefix.blank?
+      ([@parent_facet] + non_id_columns.map { |column| build_facet(column.name, :text, nil, @prefix) }).compact
     end
     
     def build_association_facets(association_name)
