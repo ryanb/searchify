@@ -29,4 +29,14 @@ describe Searchify::Facet do
   it "should default to text type" do
     Searchify::Facet.new(MockedModel, :name).type.should == :text
   end
+  
+  it "should include passed prefix in key name" do
+    facet = Searchify::Facet.new(MockedModel, :first_name, :text, nil, :foo)
+    facet.key_name.should == 'foo_first_name'
+  end
+  
+  it "should default key name to only name when no prefixed passed" do
+    facet = Searchify::Facet.new(MockedModel, :first_name, :text, nil)
+    facet.key_name.should == 'first_name'
+  end
 end
