@@ -47,9 +47,7 @@ module Searchify
     
     def build_association_facets(association_name)
       reflection = @model_class.reflect_on_association(association_name)
-      reflection.klass.columns.map do |column|
-        Facet.new(@model_class, [association_name, column.name].join('_'))
-      end
+      FacetsBuilder.build(reflection.klass, arguments_for_association(association_name), association_name)
     end
     
     def non_id_columns
@@ -62,6 +60,18 @@ module Searchify
     
     def association_name?(name)
       @model_class.reflect_on_association(name)
+    end
+    
+    def arguments_for_association(name)
+      if association_hash[name].nil?
+        [:all]
+      else
+        association_hash[name]
+      end
+    end
+    
+    def association_hash
+      @arguments.last.kind_of?(Hash) ? @arguments.last : {}
     end
   end
 end

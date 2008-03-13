@@ -49,7 +49,7 @@ describe Searchify::FacetsBuilder do
     MockedModel.add_column(:foo)
     MockedModel.has_many(:mocked_models)
     facets = Searchify::FacetsBuilder.build(MockedModel, [:mocked_models])
-    facets.map(&:name).should == %w[mocked_models_name mocked_models_foo]
+    facets.map(&:key_name).should == %w[mocked_models_name mocked_models_foo]
   end
   
   it "should pass along prefix to facets" do
