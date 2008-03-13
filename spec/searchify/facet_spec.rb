@@ -45,4 +45,9 @@ describe Searchify::Facet do
     facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name', :foo)
     facet.to_json.should == { :name => 'foo_first_name', :display => 'Name', :type => 'text', :default_value => '' }.to_json
   end
+  
+  it "should be able to accept options for json" do
+    facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name', :foo)
+    facet.to_json(:only => [:name]).should == { :name => 'foo_first_name' }.to_json
+  end
 end
