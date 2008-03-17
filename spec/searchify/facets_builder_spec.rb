@@ -38,4 +38,11 @@ describe Searchify::FacetsBuilder do
     facets = Searchify::FacetsBuilder.build(MockedModel, [{:mocked_models => [:name]}])
     facets.map(&:key_name).should == %w[all mocked_models_name]
   end
+  
+  it "should include association facets as children in the 'all' facet" do
+    MockedModel.add_column(:name)
+    MockedModel.has_many(:mocked_models)
+    facets = Searchify::FacetsBuilder.build(MockedModel, [{:mocked_models => [:name]}])
+    facets.first.children.map(&:key_name).should == %w[mocked_models_name]
+  end
 end

@@ -68,4 +68,11 @@ describe Searchify::Searcher do
     searcher.search(:mocked_models_name => 'Joe')
     MockedModel.paginate_options[:include].should == [:mocked_models]
   end
+  
+  it "should have associated conditions for all columns" do
+    MockedModel.add_column(:name)
+    MockedModel.has_many(:mocked_models)
+    searcher = Searchify::Searcher.new(MockedModel, :mocked_models => [:name])
+    searcher.conditions(:all => 'Joe').should == ["((mocked_models.name LIKE ?))", 'Joe']
+  end
 end

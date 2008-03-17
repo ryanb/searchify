@@ -11,6 +11,10 @@ module Searchify
       @children << child
     end
     
+    def add_children(children)
+      @children += children
+    end
+    
     def conditions(value)
       merge_conditions textual_children.map { |c| c.conditions(value) }
     end

@@ -49,7 +49,9 @@ module Searchify
     
     def facets_from_association(name, arguments)
       raise "No association found with the name '#{name}' for searchify." if association_reflection(name).nil?
-      FacetsBuilder.build(association_reflection(name).klass, arguments, name)
+      returning FacetsBuilder.build(association_reflection(name).klass, arguments, name) do |facets|
+        @parent_facet.add_children(facets) if @parent_facet
+      end
     end
     
     def column(name)
