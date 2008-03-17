@@ -9,22 +9,8 @@ module Searchify
     end
     
     def search(options)
-      options[:page] ||= 1
-      options[:conditions] = conditions(options)
-      options[:order] = order(options)
-      @model_class.paginate(options.slice(:page, :per_page, :conditions, :order).merge(:include => include_options)) # security concern, don't pass conditions directly!
-    end
-    
-    def conditions(options)
-      conditions = []
-      options.each do |name, value|
-        conditions << facet_with_name(name).conditions(value) unless facet_with_name(name).nil?
-      end
-      ConditionsMerger.merge(conditions)
-    end
-    
-    def order(options)
-      facet_with_name(options[:order]).column_name if facet_with_name(options[:order])
+      search_options = SearchOptions.new(@facets, options)
+      @model_class.paginate(search_options.for_paginate.merge(:include => include_options))
     end
     
     private
@@ -39,10 +25,6 @@ module Searchify
       else
         []
       end
-    end
-    
-    def facet_with_name(name)
-      @facets.detect { |f| f.key_name == name.to_s }
     end
   end
 end
