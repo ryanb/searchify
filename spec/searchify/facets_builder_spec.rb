@@ -45,4 +45,11 @@ describe Searchify::FacetsBuilder do
     facets = Searchify::FacetsBuilder.build(MockedModel, [{:mocked_models => [:name]}])
     facets.first.children.map(&:key_name).should == %w[mocked_models_name]
   end
+  
+  it "should maintain column type in facet" do
+    MockedModel.add_column(:created_at, :datetime)
+    facets = Searchify::FacetsBuilder.build(MockedModel, [:created_at])
+    facet = facets.detect { |f| f.name == 'created_at' }
+    facet.type.should == :datetime
+  end
 end

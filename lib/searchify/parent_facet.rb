@@ -26,7 +26,7 @@ module Searchify
     end
     
     def textual_children
-      @children.select { |c| c.type == :text }
+      @children.select { |c| [:string, :text].include? c.type }
     end
   end
 end

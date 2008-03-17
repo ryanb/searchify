@@ -44,7 +44,9 @@ module Searchify
     
     def facet_from_column_name(name)
       raise "No column found with the name '#{name}' for searchify." if column(name).nil?
-      build_facet(name)
+      returning Facet.new(@model_class, column(name).name, column(name).type, nil, @prefix) do |facet|
+        @parent_facet.add_child(facet) if @parent_facet
+      end
     end
     
     def facets_from_association(name, arguments)
@@ -60,12 +62,6 @@ module Searchify
     
     def association_reflection(name)
       @model_class.reflect_on_association(name)
-    end
-    
-    def build_facet(name)
-      returning Facet.new(@model_class, name, :text, nil, @prefix) do |facet|
-        @parent_facet.add_child(facet) if @parent_facet
-      end
     end
   end
 end

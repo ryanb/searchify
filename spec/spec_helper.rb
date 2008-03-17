@@ -16,9 +16,12 @@ class MockedModel < ActiveRecord::Base
     self.paginate_options = options
   end
   
-  def self.add_column(name, default = nil)
-    @columns ||= []
-    @columns << ActiveRecord::ConnectionAdapters::Column.new(name, default)
+  def self.add_column(name, type = :string)
+    returning ActiveRecord::ConnectionAdapters::Column.new(name, nil) do |column|
+      column.stubs(:type).returns(type)
+      @columns ||= []
+      @columns << column
+    end
   end
   
   def self.reset_columns
