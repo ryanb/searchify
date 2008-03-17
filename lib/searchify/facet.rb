@@ -23,7 +23,11 @@ module Searchify
     end
     
     def conditions(value)
-      ["#{@model_class.table_name}.#{name} LIKE ?", value]
+      ["#{column_name} LIKE ?", value]
+    end
+    
+    def column_name
+      "#{@model_class.table_name}.#{name}"
     end
     
     def to_json(options = {})

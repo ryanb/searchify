@@ -75,4 +75,12 @@ describe Searchify::Searcher do
     searcher = Searchify::Searcher.new(MockedModel, :mocked_models => [:name])
     searcher.conditions(:all => 'Joe').should == ["((mocked_models.name LIKE ?))", 'Joe']
   end
+  
+  it "should be able to order search results without conditions" do
+    MockedModel.add_column(:name)
+    searcher = Searchify::Searcher.new(MockedModel, :name)
+    searcher.search(:order => :name)
+    MockedModel.paginate_options[:order].should == 'mocked_models.name'
+    MockedModel.paginate_options[:conditions].should be_nil
+  end
 end
