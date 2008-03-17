@@ -71,4 +71,11 @@ describe Searchify::SearchOptions do
     options = Searchify::SearchOptions.new(build_facets(:mocked_models => [:name]), :all => 'Joe')
     options.conditions_option.should == ["((mocked_models.name LIKE ?))", 'Joe']
   end
+  
+  it "should pass hash as conditions value to facet when providing suffix" do
+    facet = Searchify::Facet.new(MockedModel, :name)
+    facet.expects(:conditions).with(:foo => 'bar')
+    options = Searchify::SearchOptions.new([facet], :name_foo => 'bar')
+    options.conditions_option
+  end
 end

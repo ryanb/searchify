@@ -18,13 +18,13 @@ describe Searchify::Facet do
   
   it "should have conditions for a given value" do
     facet = Searchify::Facet.new(MockedModel, :name)
-    facet.conditions('foo').should == ["mocked_models.name LIKE ?", 'foo']
+    facet.conditions(:value => 'foo').should == ["mocked_models.name LIKE ?", 'foo']
   end
   
   it "should ask model for table name" do
     MockedModel.stubs(:table_name).returns('custom_table')
     facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name')
-    facet.conditions('Joe').should == ["custom_table.first_name LIKE ?", 'Joe']
+    facet.conditions(:value => 'Joe').should == ["custom_table.first_name LIKE ?", 'Joe']
   end
   
   it "should default to text type" do

@@ -22,8 +22,8 @@ module Searchify
       @name == 'all'
     end
     
-    def conditions(value)
-      ["#{column_name} LIKE ?", value]
+    def conditions(options)
+      ["#{column_name} LIKE ?", options[:value]]
     end
     
     def column_name
