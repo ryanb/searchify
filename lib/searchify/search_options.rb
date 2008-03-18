@@ -29,31 +29,8 @@ module Searchify
     
     def conditions_array
       @facets.map do |facet|
-        options = condition_options_for_facet(facet)
-        facet.conditions(options) unless options.empty?
+        facet.conditions_for_raw_options(@options)
       end
-    end
-    
-    def condition_options_for_facet(facet)
-      facet_options = {}
-      @options.select do |name, value|
-        if name.to_s == facet.key_name # this could use some refactoring and move into facet
-          facet_options[:value] = value
-        elsif name.to_s.starts_with? "#{facet.key_name}_"
-          facet_options[name.to_s.sub("#{facet.key_name}_", '').to_sym] = value
-        end
-      end
-      facet_options
-    end
-    
-    def facet_condition_options
-      result = {}
-      @facets.each do |facet|
-        
-        
-        result[facet] = facet_conditions
-      end
-      result
     end
     
     def facet_with_name(name)

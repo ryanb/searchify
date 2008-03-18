@@ -33,7 +33,7 @@ module Searchify
         end
       elsif options[:operator] && valid_operator?(options[:operator])
         ["#{column_name} #{options[:operator]} ?", options[:value]]
-      else
+      elsif options[:value]
         ["#{column_name} LIKE ?", options[:value]]
       end
     end
@@ -46,7 +46,23 @@ module Searchify
       { :name => key_name, :display => display_name, :type => type, :default_value => '' }.to_json(options)
     end
     
+    def conditions_for_raw_options(raw_options)
+      conditions(condition_options_from_raw_options(raw_options))
+    end
+    
     private
+    
+    def condition_options_from_raw_options(raw_options)
+      options = {}
+      raw_options.each do |name, value|
+        if name.to_s == key_name
+          options[:value] = value
+        elsif name.to_s.starts_with? "#{key_name}_"
+          options[name.to_s.sub("#{key_name}_", '').to_sym] = value
+        end
+      end
+      options
+    end
     
     def valid_operator?(operator)
       %w[< > <= >= = != <>].include? operator

@@ -50,6 +50,12 @@ describe Searchify::Facet do
     facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name', :foo)
     facet.to_json(:only => [:name]).should == { :name => 'foo_first_name' }.to_json
   end
+  
+  it "should have conditions for raw options" do
+    facet = Searchify::Facet.new(MockedModel, :count, :integer, nil, :foo)
+    raw_options = { :foo_count => '5', :foo_count_operator => '>=', :ignore_this => 'ignore' }
+    facet.conditions_for_raw_options(raw_options).should == ["mocked_models.count >= ?", '5']
+  end
 end
 
 describe Searchify::Facet, "with integer column" do
