@@ -1,8 +1,9 @@
 require 'rubygems'
 require 'spec'
 require 'active_support'
-require 'action_pack'
 require 'active_record'
+require 'action_controller'
+require 'action_view'
 require File.dirname(__FILE__) + '/../lib/searchify.rb'
 
 Spec::Runner.configure do |config|
