@@ -50,4 +50,21 @@ describe Searchify::Facet do
     facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name', :foo)
     facet.to_json(:only => [:name]).should == { :name => 'foo_first_name' }.to_json
   end
+  
+  it "should be able to provide the operator" do
+    facet = Searchify::Facet.new(MockedModel, :count, :integer)
+    facet.conditions(:operator => '<=', :value => '5').should == ["mocked_models.count <= ?", '5']
+  end
+  
+  it "should fall back to LIKE condition if operator is invalid" do
+    facet = Searchify::Facet.new(MockedModel, :count, :integer)
+    facet.conditions(:operator => 'foo', :value => '5').should == ["mocked_models.count LIKE ?", '5']
+  end
+  
+  %w[< > <= >= = != <>].each do |operator|
+    it "should support #{operator} as an operator" do
+      facet = Searchify::Facet.new(MockedModel, :count, :integer)
+      facet.conditions(:operator => operator, :value => '5').should == ["mocked_models.count #{operator} ?", '5']
+    end
+  end
 end

@@ -1,6 +1,5 @@
 
 - support searching a date range on date/time columns
-- support greater/less than searching for numeric fields
 - override facet name
 - override facet class
 - add searchify.js file and some way to generate it

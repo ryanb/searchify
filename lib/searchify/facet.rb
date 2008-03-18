@@ -23,7 +23,11 @@ module Searchify
     end
     
     def conditions(options)
-      ["#{column_name} LIKE ?", options[:value]]
+      if options[:operator] && valid_operator?(options[:operator])
+        ["#{column_name} #{options[:operator]} ?", options[:value]]
+      else
+        ["#{column_name} LIKE ?", options[:value]]
+      end
     end
     
     def column_name
@@ -32,6 +36,12 @@ module Searchify
     
     def to_json(options = {})
       { :name => key_name, :display => display_name, :type => type, :default_value => '' }.to_json(options)
+    end
+    
+    private
+    
+    def valid_operator?(operator)
+      %w[< > <= >= = != <>].include? operator
     end
   end
 end
