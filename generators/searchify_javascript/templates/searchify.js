@@ -34,12 +34,16 @@ var Searchify = Class.create({
 
   get_params: function() {
     var result = new Hash();
-    var pairs = unescape(top.location.search.substring(1)).split(/\&/);
+    var pairs = top.location.search.substring(1).split(/\&/);
     pairs.each(function(pair) {
       var name_value = pair.split(/\=/)
-      result.set(name_value[0], name_value[1]);
-    });
+      result.set(this.decode_url(name_value[0]), this.decode_url(name_value[1]));
+    }, this);
     return result;
+  },
+  
+  decode_url: function(string) {
+    return unescape(string.replace(/\+/g,"%20"));
   },
   
   initial_rows: function() {
@@ -148,7 +152,7 @@ var SearchifyRow = Class.create({
   
   value_field_for_type: function(type, name) {
     if (type == "text" || type == "string") {
-      return "<input type='text' name='" + name + "' value='" + this.value + "' />"
+      return "<input type='text' name='" + name + "' value='" + this.escaped_value() + "' />"
     } else {
       return "not implemented yet"
     }
@@ -162,5 +166,10 @@ var SearchifyRow = Class.create({
     this.facet = new_facet
     this.value = false;
     $(this.value_field_id()).update(this.value_field())
+  },
+  
+  escaped_value: function() {
+    var value = this.value || ''
+    return value.replace(/\"/g, '&#34;').replace(/\'/g, "&#39;")
   }
 })
