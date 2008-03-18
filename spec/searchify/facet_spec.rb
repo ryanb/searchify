@@ -43,7 +43,7 @@ describe Searchify::Facet do
   
   it "should be able to export to json" do
     facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name', :foo)
-    facet.to_json.should == { :name => 'foo_first_name', :display => 'Name', :type => 'text', :default_value => '' }.to_json
+    facet.to_json.should == { :name => 'foo_first_name', :display => 'Name', :type => 'text' }.to_json
   end
   
   it "should be able to accept options for json" do

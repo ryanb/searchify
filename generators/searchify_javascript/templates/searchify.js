@@ -148,17 +148,9 @@ var SearchifyRow = Class.create({
   
   value_field_for_type: function(type, name) {
     if (type == "text" || type == "string") {
-      return "<input type='text' name='" + name + "' value='" + this.value_or_default() + "' />"
+      return "<input type='text' name='" + name + "' value='" + this.value + "' />"
     } else {
       return "not implemented yet"
-    }
-  },
-  
-  value_or_default: function() {
-    if (this.value) {
-      return this.value;
-    } else {
-      return this.facet.default_value;
     }
   },
   

@@ -43,7 +43,7 @@ module Searchify
     end
     
     def to_json(options = {})
-      { :name => key_name, :display => display_name, :type => type, :default_value => '' }.to_json(options)
+      { :name => key_name, :display => display_name, :type => type }.to_json(options)
     end
     
     def conditions_for_raw_options(raw_options)
