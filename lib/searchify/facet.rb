@@ -23,7 +23,15 @@ module Searchify
     end
     
     def conditions(options)
-      if options[:operator] && valid_operator?(options[:operator])
+      if options[:from] || options[:to]
+        if !options[:from].blank? && !options[:to].blank?
+          ["#{column_name} >= ? AND #{column_name} <= ?", options[:from], options[:to]]
+        elsif !options[:from].blank?
+          ["#{column_name} >= ?", options[:from]]
+        elsif !options[:to].blank?
+          ["#{column_name} <= ?", options[:to]]
+        end
+      elsif options[:operator] && valid_operator?(options[:operator])
         ["#{column_name} #{options[:operator]} ?", options[:value]]
       else
         ["#{column_name} LIKE ?", options[:value]]

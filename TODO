@@ -1,5 +1,5 @@
 
-- support searching a date range on date/time columns
+- add support for searching boolean columns (any, true, or false)
 - override facet name
 - override facet class
 - add searchify.js file and some way to generate it

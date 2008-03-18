@@ -50,21 +50,46 @@ describe Searchify::Facet do
     facet = Searchify::Facet.new(MockedModel, :first_name, :text, 'Name', :foo)
     facet.to_json(:only => [:name]).should == { :name => 'foo_first_name' }.to_json
   end
+end
+
+describe Searchify::Facet, "with integer column" do
+  before(:each) do
+    @facet = Searchify::Facet.new(MockedModel, :count, :integer)
+  end
   
-  it "should be able to provide the operator" do
-    facet = Searchify::Facet.new(MockedModel, :count, :integer)
-    facet.conditions(:operator => '<=', :value => '5').should == ["mocked_models.count <= ?", '5']
+  it "should be able to provide the operator for conditions" do
+    @facet.conditions(:operator => '<=', :value => '5').should == ["mocked_models.count <= ?", '5']
   end
   
   it "should fall back to LIKE condition if operator is invalid" do
-    facet = Searchify::Facet.new(MockedModel, :count, :integer)
-    facet.conditions(:operator => 'foo', :value => '5').should == ["mocked_models.count LIKE ?", '5']
+    @facet.conditions(:operator => 'foo', :value => '5').should == ["mocked_models.count LIKE ?", '5']
   end
   
   %w[< > <= >= = != <>].each do |operator|
-    it "should support #{operator} as an operator" do
-      facet = Searchify::Facet.new(MockedModel, :count, :integer)
-      facet.conditions(:operator => operator, :value => '5').should == ["mocked_models.count #{operator} ?", '5']
+    it "should support #{operator} as a condition operator" do
+      @facet.conditions(:operator => operator, :value => '5').should == ["mocked_models.count #{operator} ?", '5']
     end
+  end
+end
+
+describe Searchify::Facet, "with date column" do
+  before(:each) do
+    @facet = Searchify::Facet.new(MockedModel, :created_at, :date)
+  end
+  
+  it "should support passing 'from' and 'to' date range" do
+    @facet.conditions(:from => '2008-01-01', :to => '2008-02-01').should == ["mocked_models.created_at >= ? AND mocked_models.created_at <= ?", '2008-01-01', '2008-02-01']
+  end
+  
+  it "should have no conditions when passing blank for both from and to date range" do
+    @facet.conditions(:from => '', :to => '').should be_nil
+  end
+  
+  it "should have only 'from' condition if 'to' is blank" do
+    @facet.conditions(:from => '2008-01-01', :to => '').should == ["mocked_models.created_at >= ?", '2008-01-01']
+  end
+  
+  it "should have only 'to' condition if 'from' is blank" do
+    @facet.conditions(:from => '', :to => '2008-01-01').should == ["mocked_models.created_at <= ?", '2008-01-01']
   end
 end
