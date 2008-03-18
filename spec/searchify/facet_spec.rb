@@ -56,6 +56,11 @@ describe Searchify::Facet do
     raw_options = { :foo_count => '5', :foo_count_operator => '>=', :ignore_this => 'ignore' }
     facet.conditions_for_raw_options(raw_options).should == ["mocked_models.count >= ?", '5']
   end
+  
+  it "should surround value with percent signs when doing 'contains' condition" do
+    facet = Searchify::Facet.new(MockedModel, :name)
+    facet.conditions(:contains => 'Joe').should == ["mocked_models.name LIKE ?", '%Joe%']
+  end
 end
 
 describe Searchify::Facet, "with integer column" do

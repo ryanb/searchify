@@ -33,6 +33,8 @@ module Searchify
         end
       elsif options[:operator] && valid_operator?(options[:operator])
         ["#{column_name} #{options[:operator]} ?", options[:value]]
+      elsif options[:contains]
+        ["#{column_name} LIKE ?", "%#{options[:contains]}%"]
       elsif options[:value]
         ["#{column_name} LIKE ?", options[:value]]
       end
