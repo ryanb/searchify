@@ -162,18 +162,18 @@ var SearchifyRow = Class.create({
   
   value_field_for_type: function(type) {
     if (type == "text" || type == "string") {
-      return this.text_field('');
+      return this.text_field('', 24);
     } else if (type == "date" || type == "datetime") {
-      return this.text_field('from') + " - " + this.text_field('to');
+      return this.text_field('from', 10) + " - " + this.text_field('to', 10);
     } else if (type == "integer" || type == "float" || type == "decimal") {
-      return this.operator_menu() + " " + this.text_field('');
+      return this.operator_menu() + " " + this.text_field('', 8);
     } else if (type == "boolean") {
       return this.boolean_menu();
     }
   },
   
-  text_field: function(name) {
-    return "<input type='text' name='" + this.make_name(name) + "' value='" + this.escaped_value(name) + "' />";
+  text_field: function(name, size) {
+    return "<input type='text' name='" + this.make_name(name) + "' value='" + this.escaped_value(name) + "' size='" + size + "' />";
   },
   
   boolean_menu: function() {
