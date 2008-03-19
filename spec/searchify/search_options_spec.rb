@@ -23,7 +23,7 @@ describe Searchify::SearchOptions do
   it "should have conditions for searching all columns" do
     MockedModel.add_column(:name)
     options = Searchify::SearchOptions.new(build_facets(:name), :all => 'Joe')
-    options.conditions_option.should == ["((mocked_models.name LIKE ?))", 'Joe']
+    options.conditions_option.should == ["(((mocked_models.name LIKE ?)))", 'Joe']
   end
   
   # it's difficult to test this all in one expectation because the order of the conditions can change
@@ -50,7 +50,7 @@ describe Searchify::SearchOptions do
     MockedModel.add_column(:name)
     MockedModel.add_column(:foo)
     options = Searchify::SearchOptions.new(build_facets(:name, :foo), :all => 'Joe')
-    options.conditions_option.should == ["((mocked_models.name LIKE ?) OR (mocked_models.foo LIKE ?))", 'Joe', 'Joe']
+    options.conditions_option.should == ["(((mocked_models.name LIKE ?) OR (mocked_models.foo LIKE ?)))", 'Joe', 'Joe']
   end
   
   it "should have conditions for all columns and another" do
@@ -69,6 +69,6 @@ describe Searchify::SearchOptions do
     MockedModel.add_column(:name)
     MockedModel.has_many(:mocked_models)
     options = Searchify::SearchOptions.new(build_facets(:mocked_models => [:name]), :all => 'Joe')
-    options.conditions_option.should == ["((mocked_models.name LIKE ?))", 'Joe']
+    options.conditions_option.should == ["(((mocked_models.name LIKE ?)))", 'Joe']
   end
 end

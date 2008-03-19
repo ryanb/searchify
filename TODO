@@ -2,7 +2,6 @@ Ruby
 - allow override facet name
 - allow override facet class
 - some way to add custom fields (for making a category select menu for example)
-- make 'All Text' facet work more like a full text search
 
 Javascript
 - keep the text field content while switching facet of same type

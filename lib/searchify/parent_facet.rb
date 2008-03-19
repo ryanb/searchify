@@ -15,18 +15,22 @@ module Searchify
       @children += children
     end
     
-    def conditions(value)
-      merge_conditions textual_children.map { |c| c.conditions(value) }
+    def conditions(options)
+      ConditionsMerger.merge(conditions_for_words(options[:value].split(/\s+/)), 'AND') unless options[:value].nil?
     end
     
     private
     
-    def merge_conditions(conditions)
-      ConditionsMerger.merge(conditions, 'OR')
+    def conditions_for_words(words)
+      words.map do |word|
+        ConditionsMerger.merge(conditions_for_word(word), 'OR')
+      end
     end
     
-    def textual_children
-      @children.select { |c| [:string, :text].include? c.type }
+    def conditions_for_word(word)
+      children.map do |child|
+        child.conditions(:value => word)
+      end
     end
   end
 end
