@@ -2,7 +2,7 @@ module Searchify
   class SearchOptions
     def initialize(facets, options)
       @facets = facets
-      @options = options
+      @options = options.symbolize_keys
     end
     
     def for_paginate

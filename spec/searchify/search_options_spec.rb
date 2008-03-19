@@ -71,4 +71,11 @@ describe Searchify::SearchOptions do
     options = Searchify::SearchOptions.new(build_facets(:mocked_models => [:name]), :all => 'Joe')
     options.conditions_option.should == ["(((mocked_models.name LIKE ?)))", '%Joe%']
   end
+  
+  it "should include order option" do
+    MockedModel.add_column(:name)
+    MockedModel.has_many(:mocked_models)
+    options = Searchify::SearchOptions.new(build_facets(:mocked_models => [:name]), 'order' => 'mocked_models_name')
+    options.for_paginate[:order].should == 'mocked_models.name'
+  end
 end
