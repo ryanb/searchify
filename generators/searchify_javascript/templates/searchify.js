@@ -150,23 +150,10 @@ var SearchifyRow = Class.create({
   },
   
   facet_options: function() {
-    var result = "";
-    this.owner.facets.each(function(facet) {
-      result = result + this.facet_option(facet.name, facet.display);
-    }, this);
-    return result;
-  },
-  
-  facet_option: function(name, display) {
-    return "<option value='" + name + "'" + this.selected_facet_option(name) + ">" + display + "</option>";
-  },
-  
-  selected_facet_option: function(name) {
-    if (this.facet.name == name) {
-      return " selected='selected'";
-    } else {
-      return '';
-    }
+    var options = this.owner.facets.map(function(facet) {
+      return [facet.display, facet.name];
+    });
+    return this.select_menu_options(options, this.facet.name);
   },
   
   value_field: function() {
