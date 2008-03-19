@@ -1,3 +1,4 @@
 - allow override facet name
 - allow override facet class
 - some way to add custom fields (for making a category select menu for example)
+- add support for other database engines (specifically regarding boolean fields)
