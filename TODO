@@ -4,7 +4,6 @@ Ruby
 - some way to add custom fields (for making a category select menu for example)
 
 Javascript
-- keep the text field content while switching facet of same type
-- add a date range field when selecting a date facet
-- add a select menu with operator when selecting an integer or float facet
-- add a select menu with Any, Yes, and No options for boolean facets
+- dont disable select menus which aren't the facet menu
+- maintain selected option in menu after submitting
+

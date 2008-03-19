@@ -24,7 +24,8 @@ function searchify_remove_row(index) {
 var Searchify = Class.create({
   initialize: function(facets) {
     this.facets = facets;
-    this.rows = this.initial_rows();
+    this.rows = new Array();
+    this.build_initial_rows();
     $('searchify').update(this.to_html());
   },
 
@@ -36,8 +37,10 @@ var Searchify = Class.create({
     var result = new Hash();
     var pairs = top.location.search.substring(1).split(/\&/);
     pairs.each(function(pair) {
-      var name_value = pair.split(/\=/)
-      result.set(this.decode_url(name_value[0]), this.decode_url(name_value[1]));
+      var name_value = pair.split(/\=/);
+      if (name_value.length == 2) {
+        result.set(this.decode_url(name_value[0]), this.decode_url(name_value[1]));
+      }
     }, this);
     return result;
   },
@@ -46,12 +49,10 @@ var Searchify = Class.create({
     return unescape(string.replace(/\+/g,"%20"));
   },
   
-  initial_rows: function() {
-    var rows_from_params = this.rows_from_params();
-    if (rows_from_params.length == 0) {
-      return new Array(this.default_row());
-    } else {
-      return rows_from_params;
+  build_initial_rows: function() {
+    this.build_rows_from_params();
+    if (this.rows.length == 0) {
+      this.rows.push(this.default_row());
     }
   },
   
@@ -59,15 +60,25 @@ var Searchify = Class.create({
     return new SearchifyRow(this, this.facets.first(), false);
   },
   
-  rows_from_params: function() {
-    var result = new Array();
+  build_rows_from_params: function() {
     this.get_params().each(function(param) {
       facet = this.facet_with_name(param.key);
       if (facet) {
-        result.push(new SearchifyRow(this, facet, param.value));
+        row = this.row_from_facet(facet);
+        row.add_value(param.key, param.value);
       }
     }, this);
-    return result
+  },
+  
+  row_from_facet: function(facet) {
+    for (var i=0; i<this.rows.length; ++i ) {
+      if (this.rows[i].facet.name == facet.name) {
+        return this.rows[i];
+      }
+    };
+    var row = new SearchifyRow(this, facet);
+    this.rows.push(row)
+    return row;
   },
   
   index_of_row: function(row) {
@@ -81,7 +92,7 @@ var Searchify = Class.create({
   
   facet_with_name: function(name) {
     for (var i=0; i<this.facets.length; ++i ) {
-      if (this.facets[i].name == name) {
+      if (this.facets[i].name == name || name.startsWith(this.facets[i].name + '_')) {
         return this.facets[i];
       }
     }
@@ -100,10 +111,22 @@ var Searchify = Class.create({
 });
 
 var SearchifyRow = Class.create({
-  initialize: function(owner, facet, value) {
+  initialize: function(owner, facet) {
     this.owner = owner;
     this.facet = facet;
-    this.value = value;
+    this.values = new Hash();
+  },
+  
+  add_value: function(name, value) {
+    this.values.set(this.strip_name(name), value);
+  },
+  
+  strip_name: function(name) {
+    if (name == this.facet.name) {
+      return '';
+    } else {
+      return name.replace(this.facet.name + '_', '');
+    }
   },
   
   to_html: function() {
@@ -163,7 +186,7 @@ var SearchifyRow = Class.create({
   },
   
   text_field: function(name) {
-    return "<input type='text' name='" + this.make_name(name) + "' value='" + this.escaped_value() + "' />";
+    return "<input type='text' name='" + this.make_name(name) + "' value='" + this.escaped_value(name) + "' />";
   },
   
   boolean_menu: function() {
@@ -198,12 +221,11 @@ var SearchifyRow = Class.create({
   
   change_facet: function(new_facet) {
     this.facet = new_facet;
-    this.value = false;
     $(this.value_field_id()).update(this.value_field());
   },
   
-  escaped_value: function() {
-    var value = this.value || '';
+  escaped_value: function(name) {
+    var value = this.values.get(name) || '';
     return value.replace(/\"/g, '&#34;').replace(/\'/g, "&#39;");
   }
 })
