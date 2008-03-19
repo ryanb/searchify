@@ -1,6 +1,74 @@
 Searchify
 =========
 
-This is a Rails plugin which will aid in adding searching functionality to models. It is in very early development.
+This is a Rails plugin which adds some search functionality to models. It also includes a javascript file and helper methods for building a dynamic search form.
+
+
+Installation
+------------
+
+If you are running edge rails you can install the plugin straight from the repository:
+
+	script/plugin install git://github.com/ryanb/searchify.git
+
+Otherwise you can install it with this command:
+
+	git clone --depth=1 git://github.com/ryanb/searchify.git vendor/plugins/searchify
+
+To use the dynamic form you need to install a javascript file using this command:
+
+	script/generate searchify_javascript
+
+
+Requirements
+------------
+
+This plugin uses the "paginate" method to perform a search on the model, so you need to install the will_paginate plugin/gem.
+
+Currently only MySQL is fully supported. It may work on other database engines, just not as well.
+
+
+Instructions
+------------
+
+You can use the "searchify" method in your model class to enable it for searching. Pass the columns you want to search to this method.
+
+	class Product < ActiveRecord::Base
+	  searchify :name, :description, :price, :created_at, :discontinued
+	end
+
+You can then use the "search" method to search all or some of these columns. Here are some examples.
+
+	Product.search(:name => 'Puzzle', :description => '%forest%') # use percent sign for partial search
+	Product.search(:all => 'blue puzzle') # searches for partial word "blue" and "puzzle" in all columns
+	Product.search(:created_at_from => '2008-01-01', :created_at_to => '2008-02-01')
+	Product.search(:price_operator => '<', :price => '40') # changes the comparison operator
+	Product.search(:page => 5, :per_page => 20, :order => 'name') # pass other options besides conditions
+
+The searchify also allows you to include associations in the search. For example:
+
+	class Category < ActiveRecord::Base
+	  has_many :products
+		searchify :name, :products => [:name, :description]
+	end
+
+To search the product columns you need to prefix them with "products_" like this:
+
+	Category.search(:products_name => 'Big Ben') # finds all categories with a product called Big Ben
+	Category.search(:all => 'puzzle') # product columns are included
+
+
+
+The main benefit of this plugin is how easy it is to add a dynamic search. You can use the searchify_fields_for helper method to generate dynamic fields for searching. Like this:
+
+	<% form_tag products_path, :method => 'get' do %>
+	  <%= searchify_fields_for Product %>
+	  <p><%= submit_tag 'Search', :name => nil, :onclick => 'return searchify_submit()' %></p>
+	<% end %>
+
+Make sure you have the prototype libraries included and it should allow you to dynamically add and remove fields. Pretty cool huh?
+
+
+---
 
 Copyright (c) 2008 Ryan Bates, released under the MIT license
