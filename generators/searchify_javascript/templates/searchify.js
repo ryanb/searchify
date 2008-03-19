@@ -5,7 +5,7 @@ function searchify(facets) {
 }
 
 function searchify_submit() {
-  $$('#searchify select').invoke('disable')
+  $$('#searchify select').invoke('disable');
   return true;
 }
 
@@ -29,7 +29,7 @@ var Searchify = Class.create({
   },
 
   to_html: function() {
-    return "<div id='searchify_rows'>" + this.rows.invoke('to_html').join('') + "</div><a href='#' onclick='searchify_add_row()'>add</a>"
+    return "<div id='searchify_rows'>" + this.rows.invoke('to_html').join('') + "</div><a href='#' onclick='searchify_add_row()'>add</a>";
   },
 
   get_params: function() {
@@ -90,7 +90,7 @@ var Searchify = Class.create({
   add_row: function() {
     var row = this.default_row();
     this.rows.push(row);
-    $('searchify_rows').insert({ 'bottom': row.to_html() })
+    $('searchify_rows').insert({ 'bottom': row.to_html() });
   },
   
   remove_row: function(index) {
@@ -135,7 +135,7 @@ var SearchifyRow = Class.create({
   },
   
   facet_option: function(name, display) {
-    return "<option value='" + name + "'" + this.selected_option(name) + ">" + display + "</option>"
+    return "<option value='" + name + "'" + this.selected_option(name) + ">" + display + "</option>";
   },
   
   selected_option: function(name) {
@@ -147,14 +147,48 @@ var SearchifyRow = Class.create({
   },
   
   value_field: function() {
-    return "<span id='" + this.value_field_id() + "'>" + this.value_field_for_type(this.facet.type, this.facet.name) + "</span>";
+    return "<span id='" + this.value_field_id() + "'>" + this.value_field_for_type(this.facet.type) + "</span>";
   },
   
-  value_field_for_type: function(type, name) {
+  value_field_for_type: function(type) {
     if (type == "text" || type == "string") {
-      return "<input type='text' name='" + name + "' value='" + this.escaped_value() + "' />"
+      return this.text_field('');
+    } else if (type == "date" || type == "datetime") {
+      return this.text_field('from') + " - " + this.text_field('to');
+    } else if (type == "integer" || type == "float" || type == "decimal") {
+      return this.operator_menu() + " " + this.text_field('');
+    } else if (type == "boolean") {
+      return this.boolean_menu();
+    }
+  },
+  
+  text_field: function(name) {
+    return "<input type='text' name='" + this.make_name(name) + "' value='" + this.escaped_value() + "' />";
+  },
+  
+  boolean_menu: function() {
+    return this.select_menu('', [['Any', '%'], ['Yes', '1'], ['No', '0']]);
+  },
+  
+  operator_menu: function() {
+    return this.select_menu('operator', [['Equal', '='], ['Less Than', '<='], ['Greater Than', '>=']]);
+  },
+  
+  select_menu: function(name, options) {
+    return "<select name='" + this.make_name(name) + "'>" + this.select_menu_options(options) + "</select>";
+  },
+  
+  select_menu_options: function(options) {
+    return options.map(function(option) {
+      return "<option value='" + option[1] + "'>" + option[0] + "</option>";
+    }).join('');
+  },
+  
+  make_name: function(suffix) {
+    if (suffix == '') {
+      return this.facet.name;
     } else {
-      return "not implemented yet"
+      return this.facet.name + '_' + suffix;
     }
   },
   
@@ -163,13 +197,13 @@ var SearchifyRow = Class.create({
   },
   
   change_facet: function(new_facet) {
-    this.facet = new_facet
+    this.facet = new_facet;
     this.value = false;
-    $(this.value_field_id()).update(this.value_field())
+    $(this.value_field_id()).update(this.value_field());
   },
   
   escaped_value: function() {
-    var value = this.value || ''
-    return value.replace(/\"/g, '&#34;').replace(/\'/g, "&#39;")
+    var value = this.value || '';
+    return value.replace(/\"/g, '&#34;').replace(/\'/g, "&#39;");
   }
 })
