@@ -5,7 +5,7 @@ function searchify(facets) {
 }
 
 function searchify_submit() {
-  $$('#searchify select').invoke('disable');
+  $$('#searchify select.searchify_facets').invoke('disable');
   return true;
 }
 
@@ -138,7 +138,7 @@ var SearchifyRow = Class.create({
   },
   
   facets_field: function() {
-    return "<select size='1' id='" + this.facets_field_id() + "' onchange='searchify_change_facet(this)'>" + this.facet_options() + "</select>";
+    return "<select class='searchify_facets' size='1' id='" + this.facets_field_id() + "' onchange='searchify_change_facet(this)'>" + this.facet_options() + "</select>";
   },
   
   facets_field_id: function() {
@@ -158,10 +158,10 @@ var SearchifyRow = Class.create({
   },
   
   facet_option: function(name, display) {
-    return "<option value='" + name + "'" + this.selected_option(name) + ">" + display + "</option>";
+    return "<option value='" + name + "'" + this.selected_facet_option(name) + ">" + display + "</option>";
   },
   
-  selected_option: function(name) {
+  selected_facet_option: function(name) {
     if (this.facet.name == name) {
       return " selected='selected'";
     } else {
@@ -198,13 +198,21 @@ var SearchifyRow = Class.create({
   },
   
   select_menu: function(name, options) {
-    return "<select name='" + this.make_name(name) + "'>" + this.select_menu_options(options) + "</select>";
+    return "<select size='1' name='" + this.make_name(name) + "'>" + this.select_menu_options(options, this.escaped_value(name)) + "</select>";
   },
   
-  select_menu_options: function(options) {
+  select_menu_options: function(options, selected) {
     return options.map(function(option) {
-      return "<option value='" + option[1] + "'>" + option[0] + "</option>";
-    }).join('');
+      return "<option value='" + option[1] + "'" + this.selected_option(option[1], selected) + ">" + option[0] + "</option>";
+    }, this).join('');
+  },
+  
+  selected_option: function(option_value, selected_value) {
+    if (option_value == selected_value) {
+      return " selected='selected'";
+    } else {
+      return '';
+    }
   },
   
   make_name: function(suffix) {

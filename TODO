@@ -4,6 +4,5 @@ Ruby
 - some way to add custom fields (for making a category select menu for example)
 
 Javascript
-- dont disable select menus which aren't the facet menu
-- maintain selected option in menu after submitting
+- refactor facet select menu and other select menus code
 
