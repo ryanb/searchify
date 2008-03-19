@@ -29,7 +29,7 @@ module Searchify
     
     def conditions_for_word(word)
       children.map do |child|
-        child.conditions(:value => word)
+        child.conditions(:contains => word)
       end
     end
   end

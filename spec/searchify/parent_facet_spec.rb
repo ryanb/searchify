@@ -28,7 +28,7 @@ describe Searchify::ParentFacet do
   it "should behave like a full text search and split the string by spaces and see if they match any children facets" do
     @facet.add_child Searchify::Facet.new(MockedModel, :first_name)
     @facet.add_child Searchify::Facet.new(MockedModel, :last_name)
-    @facet.conditions(:value => 'John Smith').should == ["((mocked_models.first_name LIKE ?) OR (mocked_models.last_name LIKE ?)) AND ((mocked_models.first_name LIKE ?) OR (mocked_models.last_name LIKE ?))", 'John', 'John', 'Smith', 'Smith']
+    @facet.conditions(:value => 'John Smith').should == ["((mocked_models.first_name LIKE ?) OR (mocked_models.last_name LIKE ?)) AND ((mocked_models.first_name LIKE ?) OR (mocked_models.last_name LIKE ?))", '%John%', '%John%', '%Smith%', '%Smith%']
   end
   
   it "should return nil for conditions if no options" do
