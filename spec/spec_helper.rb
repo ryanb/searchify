@@ -33,6 +33,10 @@ class MockedModel < ActiveRecord::Base
     @columns || []
   end
   
+  def self.columns_hash
+    columns.index_by{|c| c.name.to_s}
+  end
+  
   def self.inspect
     "Model Mock"
   end

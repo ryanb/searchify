@@ -57,7 +57,7 @@ module Searchify
     end
     
     def column(name)
-      @model_class.columns.detect { |c| c.name.to_s == name.to_s }
+      @model_class.columns_hash[name.to_s]
     end
     
     def association_reflection(name)
