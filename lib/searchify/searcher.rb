@@ -9,14 +9,15 @@ module Searchify
     end
     
     def search(options)
-      search_options = SearchOptions.new(@facets, options)
-      @model_class.paginate(search_options.for_paginate.merge(:include => include_options))
+      @model_class.paginate(paginated_search_options(options))
     end
     
     private
     
-    def include_options
-      association_names unless association_names.empty?
+    def paginated_search_options(options)
+      search_options = SearchOptions.new(@facets, options).for_paginate
+      search_options[:include] = association_names if association_names.present?
+      search_options
     end
     
     def association_names
