@@ -44,14 +44,14 @@ module Searchify
     
     def facet_from_column_name(name)
       raise "No column found with the name '#{name}' for searchify." if column(name).nil?
-      returning Facet.new(@model_class, column(name).name, column(name).type, nil, @prefix) do |facet|
+      Facet.new(@model_class, column(name).name, column(name).type, nil, @prefix).tap do |facet|
         @parent_facet.add_child(facet) if @parent_facet
       end
     end
     
     def facets_from_association(name, arguments)
       raise "No association found with the name '#{name}' for searchify." if association_reflection(name).nil?
-      returning FacetsBuilder.build(association_reflection(name).klass, arguments, name) do |facets|
+      FacetsBuilder.build(association_reflection(name).klass, arguments, name).tap do |facets|
         @parent_facet.add_children(facets) if @parent_facet
       end
     end

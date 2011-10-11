@@ -18,7 +18,7 @@ class MockedModel < ActiveRecord::Base
   end
   
   def self.add_column(name, type = :string)
-    returning ActiveRecord::ConnectionAdapters::Column.new(name, nil) do |column|
+    ActiveRecord::ConnectionAdapters::Column.new(name, nil).tap do |column|
       column.stubs(:type).returns(type)
       @columns ||= []
       @columns << column
