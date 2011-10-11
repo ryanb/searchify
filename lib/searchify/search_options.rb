@@ -6,7 +6,11 @@ module Searchify
     end
     
     def for_paginate
-      { :conditions => conditions_option, :order => order_option, :page => page_option, :per_page => per_page_option }
+      options = {:page => page_option}
+      options[:conditions] = conditions_option if conditions_option.present?
+      options[:order] = order_option if order_option.present?
+      options[:per_page] = per_page_option if per_page_option.present?
+      options
     end
     
     def conditions_option
