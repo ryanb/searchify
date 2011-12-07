@@ -159,7 +159,6 @@ $.extend(SearchifyRow.prototype, {
 
   facet_options: function() {
     var options = this.owner.facets.map(function(facet) {
-      console.log(facet)
       return [facet.display, facet.name];
     });
     return this.select_menu_options(options, this.facet.name);
