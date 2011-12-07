@@ -13,7 +13,7 @@ describe Searchify::ViewHelper, "template" do
   end
   
   it "should include facets converted to json in searchify_fields_for" do
-    @template.searchify_fields_for(MockedModel).should include(MockedModel.searchify_facets.to_json)
+    @template.searchify_fields_for(MockedModel).should include(MockedModel.searchify_facets.as_json)
   end
   
   it "should include searchify javascript in searchify_fields_for" do
