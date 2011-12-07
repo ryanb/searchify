@@ -44,8 +44,8 @@ module Searchify
       "#{@model_class.table_name}.#{name}"
     end
     
-    def to_json(options = {})
-      { :name => key_name, :display => display_name, :type => type }.to_json(options)
+    def as_json(options = {})
+      { :name => key_name, :display => display_name, :type => type }.as_json(options)
     end
     
     def conditions_for_raw_options(raw_options)
